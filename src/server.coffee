@@ -6,13 +6,26 @@ spawn = require('child_process').spawn
 
 qs   = require 'querystring'
 
+# if you're using pat-the-campfire-bot, make sure you add the same API_TOKEN to both heroku envs
+guard_token = process.env.API_TOKEN || 'dev'
+guard = new RegExp("^" + guard_token + "$");
+
 generate = (req, res) -> 
   query = qs.parse req.url.match(generate.matcher)[2]
+
+  unless query.token && guard.test(query.token)
+    console.log "expected: #{ guard }, got: #{ query.token }"
+    res.writeHead 403, "Content-Type": "application/json"
+    out = 
+      status: "error"
+      message: "api access token does not match"
+    res.end JSON.stringify(out)
+    return
 
   phrase = query.phrase
   phrase = phrase.replace /[^a-z]/, ''
 
-  res.writeHead 200
+  res.writeHead 200, "Content-Type": "application/json"
 
   pygen = spawn 'python', ['langs/python/anagrammit.py', phrase]
 
@@ -26,8 +39,13 @@ generate = (req, res) ->
 
   pygen.on 'exit', (code) ->
     console.log('child process exited with code ' + code);
+
     data = (word for word in data when word.length)
-    res.end JSON.stringify(data)
+    out = 
+      status: 'success'
+      results: data
+
+    res.end JSON.stringify(out)
 
 generate.matcher = /^\/generate(\?(.*))?$/i
 
