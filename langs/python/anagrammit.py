@@ -18,6 +18,10 @@ except ImportError:
 WORD_CHECK = 0
 LEX_GEN = 0
 
+# write to stdout
+def stdout(message):
+    print message
+
 def letterFrequency(instr):
     """ Create a letter frequency dictionary for a given word.  This function
     is only run through the dictionary once. """
@@ -72,7 +76,9 @@ def createLexicon(lexi, inpt, reqs=None):
 # The main program loop, it calls itself once for every new word in
 # an anagram.  That means if a particular anagram has eight words,
 # our max recursion depth is eight.
-def mainloop(lexi, inpt, rslt, temp_rslt=[]):
+# 
+# stop at limit, output results to stdout as they're found
+def mainloop(lexi, inpt, rslt, limit, temp_rslt=[]):
     count = 0 # to remember where in the list we are.
     for next_word in lexi:
         count += 1
@@ -86,11 +92,19 @@ def mainloop(lexi, inpt, rslt, temp_rslt=[]):
             ## Branch A
             ## Empty new input, full old lexicon.  We've got a winner!
             rslt[0] += 1
-            if rslt[0] % 1000 == 0:
-                print rslt[0]
-            rslt.append(' '.join(temp_rslt))
+
+            # output result immediately
+            stdout(' '.join(temp_rslt))
+
+            # add results to list
+            # rslt.append(' '.join(temp_rslt))
+
+            if rslt[0] >= limit:
+                return
+
             for l in temp_rslt.pop():
                 inpt[l] += 1
+
         else:
             temp_lexi = createLexicon(lexi[count:], inpt)
             if len(temp_lexi) == 0:
@@ -102,10 +116,15 @@ def mainloop(lexi, inpt, rslt, temp_rslt=[]):
                 ## Branch C
                 ## Full new input, full new lexicon. Go down one level
                 mainloop(temp_lexi, inpt, rslt, temp_rslt)
+
+                # end recursion if limit was reached
+                if rslt[0] >= limit:
+                    return
+
                 for l in temp_rslt.pop():
                     inpt[l] += 1
 
-def main(pre_inpt):
+def main(pre_inpt, limit):
     # generate initial counts for input phrase
     inpt = letterFrequency(pre_inpt)
 
@@ -116,43 +135,54 @@ def main(pre_inpt):
     dictionary = createOrigLex([x.strip() for x in open('./words/dictionary.txt')],inpt)
 
     # find all anagrams
-    mainloop(dictionary, inpt, result)
+    mainloop(dictionary, inpt, result, limit)
 
-    return result[0], result[1:]
+    # return result[0], result[1:]
 
 if __name__=="__main__":
-    # Prompt for input
-    inpt = raw_input("Enter the phrase to be anagrammed: ")
+    # input phrase
+    inpt = sys.argv[1]
     inpt = ''.join([l for l in inpt.lower() if l.isalpha()])
 
-    # Or run straight away
-    #inpt = "puresoapunion"
+    print inpt
 
-    # Time the run
-    start = time()
-    r_quant, results = main(inpt)
-    finish = time()
-    total = finish - start
+    # set limit
+    limit = 10
 
-    # Display stats
-    print "   ", "-" * 20
-    print "    input = %s" % inpt
-    print "    results = %i" % r_quant
-    print "    lexicon generations = %i" % LEX_GEN
-    print "    word checks = %i" % WORD_CHECK
-    print "    running time = %f" % total
-    print "    "
-    print "    res / sec = %f" % (r_quant / total)
-    print "    lexgen / res = %i" % (r_quant != 0 and (LEX_GEN / r_quant) or 0)
-    print "    wdchk / res = %i" % (r_quant != 0 and (WORD_CHECK / r_quant) or 0)
-    print "   ", "-" * 20
+    main(inpt, limit)
 
-    # Save to file
-    print "Saving to '%s_results.txt'" % inpt
-    f = file("%s_results.txt" % inpt, 'w')
-    for res in results:
-        print >> f, res
+    # # Prompt for input
+    # inpt = raw_input("Enter the phrase to be anagrammed: ")
+    # inpt = ''.join([l for l in inpt.lower() if l.isalpha()])
 
-    f.write("%s seconds used." % total)
-    f.write("%i results found" % r_quant)
-    f.close()
+    # # Or run straight away
+    # #inpt = "puresoapunion"
+
+    # # Time the run
+    # start = time()
+    # r_quant, results = main(inpt)
+    # finish = time()
+    # total = finish - start
+
+    # # Display stats
+    # print "   ", "-" * 20
+    # print "    input = %s" % inpt
+    # print "    results = %i" % r_quant
+    # print "    lexicon generations = %i" % LEX_GEN
+    # print "    word checks = %i" % WORD_CHECK
+    # print "    running time = %f" % total
+    # print "    "
+    # print "    res / sec = %f" % (r_quant / total)
+    # print "    lexgen / res = %i" % (r_quant != 0 and (LEX_GEN / r_quant) or 0)
+    # print "    wdchk / res = %i" % (r_quant != 0 and (WORD_CHECK / r_quant) or 0)
+    # print "   ", "-" * 20
+
+    # # Save to file
+    # print "Saving to '%s_results.txt'" % inpt
+    # f = file("%s_results.txt" % inpt, 'w')
+    # for res in results:
+    #     print >> f, res
+
+    # f.write("%s seconds used." % total)
+    # f.write("%i results found" % r_quant)
+    # f.close()
