@@ -14,10 +14,10 @@ try:
 except ImportError:
     pass # Sorry, no optimizations for you.
 
+# global counters for tracking performance
 WORD_CHECK = 0
-LEX_GEN = 0 
+LEX_GEN = 0
 
-    
 def letterFrequency(instr):
     """ Create a letter frequency dictionary for a given word.  This function
     is only run through the dictionary once. """
@@ -26,7 +26,7 @@ def letterFrequency(instr):
         d[l]=instr.count(l)
     return d
 
-#####################  LEXICON FUNCTION  #######################        
+#####################  LEXICON FUNCTION  #######################
 def createOrigLex(lexi,inpt):
     """ generate initial lexicon """
     new_dict = []
@@ -54,8 +54,8 @@ def createLexicon(lexi, inpt, reqs=None):
     for word in lexi:
         WORD_CHECK += 1
         bad = False
-        for l in word[1]: 
-            # if it doesn't have too many of any particular letter and 
+        for l in word[1]:
+            # if it doesn't have too many of any particular letter and
             # doesn't have any foreign letters...
             if inpt[l] == 0:
                 bad = True
@@ -68,14 +68,14 @@ def createLexicon(lexi, inpt, reqs=None):
             new_dict.append(word)
     return new_dict
 
-#####################  MAIN FUNCTION  #######################        
+#####################  MAIN FUNCTION  #######################
 ## The main program loop, it calls itself once for every new word in
-## an anagram.  That means if a particular anagram has eight words, 
+## an anagram.  That means if a particular anagram has eight words,
 ## our max recursion depth is eight.
 def mainloop(lexi, inpt, rslt, temp_rslt=[]):
     count = 0 # to remember where in the list we are.
     for next_word in lexi:
-        count += 1 
+        count += 1
 
         temp_rslt.append(next_word[0])
 
@@ -84,7 +84,7 @@ def mainloop(lexi, inpt, rslt, temp_rslt=[]):
 
         if sum(inpt.values()) == 0:
             ## Branch A
-            ## Empty new input, full old lexicon.  We've got a winner!  
+            ## Empty new input, full old lexicon.  We've got a winner!
             rslt[0] += 1
             if rslt[0] % 1000 == 0:
                 print rslt[0]
@@ -95,7 +95,7 @@ def mainloop(lexi, inpt, rslt, temp_rslt=[]):
             temp_lexi = createLexicon(lexi[count:], inpt)
             if len(temp_lexi) == 0:
                 ## Branch B
-                ## Full new input, empty new lexicon.                 
+                ## Full new input, empty new lexicon.
                 for l in temp_rslt.pop():
                     inpt[l] += 1
             else:
@@ -106,15 +106,18 @@ def mainloop(lexi, inpt, rslt, temp_rslt=[]):
                     inpt[l] += 1
 
 def main(pre_inpt):
+    # generate initial counts for input phrase
     inpt = letterFrequency(pre_inpt)
 
     result = [0]
-    dictionary = createOrigLex(
-                  [x.strip() for x in open('dictionary.txt')],inpt)
+
+    dictionary = createOrigLex([x.strip() for x in open('./words/dictionary.txt')],inpt)
+
     mainloop(dictionary,inpt,result)
+
     return result[0], result[1:]
 
-if __name__=="__main__":    
+if __name__=="__main__":
     # Prompt for input
     inpt = raw_input("Enter the phrase to be anagrammed: ")
     inpt = ''.join([l for l in inpt.lower() if l.isalpha()])
@@ -127,7 +130,7 @@ if __name__=="__main__":
     r_quant, results = main(inpt)
     finish = time()
     total = finish - start
-    
+
     # Display stats
     print "   ", "-" * 20
     print "    input = %s" % inpt
@@ -140,7 +143,7 @@ if __name__=="__main__":
     print "    lexgen / res = %i" % (r_quant != 0 and (LEX_GEN / r_quant) or 0)
     print "    wdchk / res = %i" % (r_quant != 0 and (WORD_CHECK / r_quant) or 0)
     print "   ", "-" * 20
-        
+
     # Save to file
     print "Saving to '%s_results.txt'" % inpt
     f = file("%s_results.txt" % inpt, 'w')
