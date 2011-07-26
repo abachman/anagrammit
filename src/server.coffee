@@ -13,24 +13,21 @@ generate = (req, res) ->
   phrase = phrase.replace /[^a-z]/, ''
 
   res.writeHead 200
-  res.write "you asked me to generate anagrams of #{ query.phrase }"
 
   pygen = spawn 'python', ['langs/python/anagrammit.py', phrase]
 
   data = []
 
-  pygen.stdout.on 'data', (data) ->
-    console.log('stdout: ' + data)
-    data.push data.trim()
+  pygen.stdout.on 'data', (text) ->
+    data.push(phrase.trim()) for phrase in text.toString().split('\n')
 
-  pygen.stderr.on 'data', (data) ->
-    console.log('stderr: ' + data)
+  pygen.stderr.on 'data', (err) ->
+    console.log('stderr: ' + err)
 
   pygen.on 'exit', (code) ->
     console.log('child process exited with code ' + code);
+    data = (word for word in data when word.length)
     res.end JSON.stringify(data)
-    
-
 
 generate.matcher = /^\/generate(\?(.*))?$/i
 

@@ -115,7 +115,7 @@ def mainloop(lexi, inpt, rslt, limit, temp_rslt=[]):
             else:
                 ## Branch C
                 ## Full new input, full new lexicon. Go down one level
-                mainloop(temp_lexi, inpt, rslt, temp_rslt)
+                mainloop(temp_lexi, inpt, rslt, limit, temp_rslt)
 
                 # end recursion if limit was reached
                 if rslt[0] >= limit:
@@ -124,15 +124,21 @@ def mainloop(lexi, inpt, rslt, limit, temp_rslt=[]):
                 for l in temp_rslt.pop():
                     inpt[l] += 1
 
-def main(pre_inpt, limit):
+def main(pre_inpt, **kwds):
+    limit = kwds.get('limit', 10)
+    word_len = kwds.get('word_len', 3)
+
     # generate initial counts for input phrase
     inpt = letterFrequency(pre_inpt)
 
     # first entry of the results array is a counter
     result = [0]
 
-    # generate the lexicon
-    dictionary = createOrigLex([x.strip() for x in open('./words/dictionary.txt')],inpt)
+    # generate the lexicon, filtering by word_len
+    dictionary = createOrigLex(
+        [x.strip() for x in open('./words/dictionary.txt') if len(x.strip()) > word_len],
+        inpt
+    )
 
     # find all anagrams
     mainloop(dictionary, inpt, result, limit)
@@ -144,12 +150,12 @@ if __name__=="__main__":
     inpt = sys.argv[1]
     inpt = ''.join([l for l in inpt.lower() if l.isalpha()])
 
-    print inpt
+    # print inpt
 
     # set limit
     limit = 10
 
-    main(inpt, limit)
+    main(inpt, limit=limit)
 
     # # Prompt for input
     # inpt = raw_input("Enter the phrase to be anagrammed: ")
