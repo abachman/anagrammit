@@ -1,3 +1,2 @@
-c/anag
-*.o
-*_results*
+node_modules
+.profile
