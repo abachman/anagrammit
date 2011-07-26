@@ -68,10 +68,10 @@ def createLexicon(lexi, inpt, reqs=None):
             new_dict.append(word)
     return new_dict
 
-#####################  MAIN FUNCTION  #######################
-## The main program loop, it calls itself once for every new word in
-## an anagram.  That means if a particular anagram has eight words,
-## our max recursion depth is eight.
+####################  MAIN FUNCTION  #######################
+# The main program loop, it calls itself once for every new word in
+# an anagram.  That means if a particular anagram has eight words,
+# our max recursion depth is eight.
 def mainloop(lexi, inpt, rslt, temp_rslt=[]):
     count = 0 # to remember where in the list we are.
     for next_word in lexi:
@@ -109,11 +109,14 @@ def main(pre_inpt):
     # generate initial counts for input phrase
     inpt = letterFrequency(pre_inpt)
 
+    # first entry of the results array is a counter
     result = [0]
 
+    # generate the lexicon
     dictionary = createOrigLex([x.strip() for x in open('./words/dictionary.txt')],inpt)
 
-    mainloop(dictionary,inpt,result)
+    # find all anagrams
+    mainloop(dictionary, inpt, result)
 
     return result[0], result[1:]
 
