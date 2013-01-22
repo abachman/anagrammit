@@ -1,17 +1,16 @@
 # DEAD SIMPLE WEB SERVER
-http = require('http')
-port = process.env.PORT || 3000
-
+http  = require 'http'
 spawn = require('child_process').spawn
-
-qs   = require 'querystring'
+qs    = require 'querystring'
 
 # if you're using pat-the-campfire-bot, make sure you add the same API_TOKEN to both heroku envs
 guard_token = process.env.API_TOKEN || 'dev'
-guard = new RegExp("^" + guard_token + "$");
+guard       = new RegExp("^" + guard_token + "$");
 
 generate = (req, res) -> 
-  query = qs.parse req.url.match(generate.matcher)[2]
+  query = req.url.match(generate.matcher)
+  query = query[2]
+  query = qs.parse(query)
 
   unless query.token && guard.test(query.token)
     console.log "expected: #{ guard }, got: #{ query.token }"
@@ -22,11 +21,9 @@ generate = (req, res) ->
     res.end JSON.stringify(out)
     return
 
-  phrase = query.phrase
-  phrase = phrase.replace /[^a-z]/, ''
+  phrase = query.phrase.replace /[^a-z]/, ''
 
-  res.writeHead 200, "Content-Type": "application/json"
-
+  # start the generator
   pygen = spawn 'python', ['langs/python/anagrammit.py', phrase]
 
   data = []
@@ -38,7 +35,7 @@ generate = (req, res) ->
     console.log('stderr: ' + err)
 
   pygen.on 'exit', (code) ->
-    console.log('child process exited with code ' + code);
+    res.writeHead 200, "Content-Type": "application/json"
 
     data = (word for word in data when word.length)
     out = 
@@ -62,23 +59,7 @@ generic = (req, res) ->
   res.writeHead 200, 'Content-Type': 'text/plain'
   res.end "hello from anagrammit!"
 
-# Important bits of the request: 
-# headers: 
-#    { host: 'localhost:3000',
-#      connection: 'keep-alive',
-#      accept: '*/*',
-#      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.122 Safari/534.30',
-#      'accept-encoding': 'gzip,deflate,sdch',
-#      'accept-language': 'en-US,en;q=0.8',
-#      'accept-charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3' }
-# url: '/favicon.ico',
-# method: 'GET',
-
-# heroku wants the app to bind to a port, so lets do that
 server = http.createServer (req, res) ->
-  console.log '----------------   REQUEST  --------------------------'
-  console.log req.url
-
   if generate.matcher.test(req.url)
     generate(req, res)
   else if favicon.matcher.test(req.url)
@@ -86,7 +67,6 @@ server = http.createServer (req, res) ->
   else
     generic req, res
 
-  console.log '------------------------------------------------------'
-
+port = process.env.PORT || 3000
 server.listen port, -> console.log("listening on port " + port)
 
