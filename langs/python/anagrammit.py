@@ -5,6 +5,7 @@ Current: 1 December 2006
 Project notes at [bachman.infogami.com](http://bachman.infogami.com/anagrammer)
 """
 
+from optparse import OptionParser
 from time import time
 import sys
 
@@ -47,7 +48,7 @@ def createOrigLex(lexi,inpt):
                 break
         # add it to the original lexicon
         if not bad:
-            new_dict.append((word, letterFrequency(word)))
+            new_dict.append( (word, letterFrequency(word)) )
     return new_dict
 
 def createLexicon(lexi, inpt, reqs=None):
@@ -76,14 +77,15 @@ def createLexicon(lexi, inpt, reqs=None):
 # The main program loop, it calls itself once for every new word in
 # an anagram.  That means if a particular anagram has eight words,
 # our max recursion depth is eight.
-# 
+#
 # stop at limit, output results to stdout as they're found
-def mainloop(lexi, inpt, rslt, limit, temp_rslt=[]):
+def mainloop(lexi, inpt, rslt, limit, temp_result=[]):
     count = 0 # to remember where in the list we are.
+
     for next_word in lexi:
         count += 1
 
-        temp_rslt.append(next_word[0])
+        temp_result.append(next_word[0])
 
         for x in next_word[1]:
             inpt[x] -= next_word[1][x]
@@ -94,15 +96,15 @@ def mainloop(lexi, inpt, rslt, limit, temp_rslt=[]):
             rslt[0] += 1
 
             # output result immediately
-            stdout(' '.join(temp_rslt))
+            stdout(' '.join(temp_result))
 
             # add results to list
-            # rslt.append(' '.join(temp_rslt))
+            # rslt.append(' '.join(temp_result))
 
-            if rslt[0] >= limit:
+            if rslt[0] >= limit and limit != 0:
                 return
 
-            for l in temp_rslt.pop():
+            for l in temp_result.pop():
                 inpt[l] += 1
 
         else:
@@ -110,85 +112,103 @@ def mainloop(lexi, inpt, rslt, limit, temp_rslt=[]):
             if len(temp_lexi) == 0:
                 ## Branch B
                 ## Full new input, empty new lexicon.
-                for l in temp_rslt.pop():
+                for l in temp_result.pop():
                     inpt[l] += 1
             else:
                 ## Branch C
                 ## Full new input, full new lexicon. Go down one level
-                mainloop(temp_lexi, inpt, rslt, limit, temp_rslt)
+                mainloop(temp_lexi, inpt, rslt, limit, temp_result)
 
                 # end recursion if limit was reached
-                if rslt[0] >= limit:
+                if rslt[0] >= limit and limit != 0:
                     return
 
-                for l in temp_rslt.pop():
+                for l in temp_result.pop():
                     inpt[l] += 1
 
 def main(pre_inpt, **kwds):
     limit = kwds.get('limit', 10)
     word_len = kwds.get('word_len', 3)
+    exclude = kwds.get('exclude', '')
+    include = kwds.get('include', '')
+    subtract = kwds.get('subtract', '')
+    dump_lexicon = kwds.get('dump_lexicon', False)
+
+    [ pre_inpt.remove(l) for l in subtract ]
+
+    # remove include's letters from input phrase
+    if len(include) > 0:
+        [ pre_inpt.remove(l) for l in include ]
 
     # generate initial counts for input phrase
     inpt = letterFrequency(pre_inpt)
 
+    # generate the lexicon, filtering by word_len
+    word_list = []
+    for w in open('./words/dictionary.txt'):
+        w = w.strip()
+        if len(w) > word_len and w != include and w != exclude:
+            word_list.append(w)
+
+    dictionary = createOrigLex(word_list, inpt)
+
+    # write lexicon
+    with open('./words/lexicon.tmp', 'w') as lex:
+        lex.write("# input:  {0}\n".format(pre_inpt))
+        lex.write("# length: {0}\n".format(len(dictionary)))
+        [ lex.write(w[0] + "\n") for w in dictionary ]
+
+    # find all anagrams
+    temp_result = []
+    if len(include) > 0:
+        print "always include \"{0}\"".format(include)
+        temp_result = [include]
+
     # first entry of the results array is a counter
     result = [0]
 
-    # generate the lexicon, filtering by word_len
-    dictionary = createOrigLex(
-        [x.strip() for x in open('./words/dictionary.txt') if len(x.strip()) > word_len],
-        inpt
-    )
-
-    # find all anagrams
-    mainloop(dictionary, inpt, result, limit)
-
-    # return result[0], result[1:]
+    mainloop(dictionary, inpt, result, limit, temp_result)
+    # mainloop(dictionary, inpt, result, limit, temp_result)
 
 if __name__=="__main__":
     # input phrase
-    inpt = sys.argv[1]
-    inpt = ''.join([l for l in inpt.lower() if l.isalpha()])
+    inpt = sys.argv[-1]
+    inpt = [l.lower() for l in inpt if l.isalpha()]
 
-    # print inpt
+    parser = OptionParser()
 
-    # set limit
-    limit = 10
+    # parser.add_option("-o", "--output", dest="output",
+    #                   help="write results to OUTPUT", metavar="FILE")
+    parser.add_option('-n', '--number',
+                      dest="limit", default=10, type=int,
+                      help="number of results to return")
+    parser.add_option('-l', '--length', dest='word_length', type=int,
+                      help="minimum word length in results")
+    parser.add_option('-i', '--include', dest='include',
+                      help="include a word in the results")
+    parser.add_option('-e', '--exclude', dest='exclude',
+                      help="exclude a word from the results")
+    parser.add_option('-s', '--subtract', dest='subtract',
+                      help="subtract a word from the input phrase")
+    parser.add_option('-d', '--dump', action="store_true", dest='dump_lexicon',
+                      help="write initial lexicon to words/lexicon.tmp")
+    parser.add_option('-q', '--quiet', action="store_true", dest='quiet',
+                      help="write initial lexicon to words/lexicon.tmp")
 
-    main(inpt, limit=limit)
+    (options, args) = parser.parse_args()
 
-    # # Prompt for input
-    # inpt = raw_input("Enter the phrase to be anagrammed: ")
-    # inpt = ''.join([l for l in inpt.lower() if l.isalpha()])
+    # set limits
+    word_len = options.word_length or 3
+    limit    = options.limit
+    if limit is None:
+        limit = 10
+    exclude  = options.exclude or '' # always exclude
+    include  = options.include or '' # always include
+    subtract = options.subtract or '' # always include
 
-    # # Or run straight away
-    # #inpt = "puresoapunion"
+    exclude = exclude.lower()
+    include = include.lower()
+    subtract = subtract.lower()
 
-    # # Time the run
-    # start = time()
-    # r_quant, results = main(inpt)
-    # finish = time()
-    # total = finish - start
-
-    # # Display stats
-    # print "   ", "-" * 20
-    # print "    input = %s" % inpt
-    # print "    results = %i" % r_quant
-    # print "    lexicon generations = %i" % LEX_GEN
-    # print "    word checks = %i" % WORD_CHECK
-    # print "    running time = %f" % total
-    # print "    "
-    # print "    res / sec = %f" % (r_quant / total)
-    # print "    lexgen / res = %i" % (r_quant != 0 and (LEX_GEN / r_quant) or 0)
-    # print "    wdchk / res = %i" % (r_quant != 0 and (WORD_CHECK / r_quant) or 0)
-    # print "   ", "-" * 20
-
-    # # Save to file
-    # print "Saving to '%s_results.txt'" % inpt
-    # f = file("%s_results.txt" % inpt, 'w')
-    # for res in results:
-    #     print >> f, res
-
-    # f.write("%s seconds used." % total)
-    # f.write("%i results found" % r_quant)
-    # f.close()
+    main(inpt, limit=limit, word_len=word_len, dump_lexicon=options.dump_lexicon,
+         exclude=exclude, include=include, subtract=subtract)
