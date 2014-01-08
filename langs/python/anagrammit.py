@@ -153,10 +153,11 @@ def main(pre_inpt, **kwds):
     dictionary = createOrigLex(word_list, inpt)
 
     # write lexicon
-    with open('./words/lexicon.tmp', 'w') as lex:
-        lex.write("# input:  {0}\n".format(pre_inpt))
-        lex.write("# length: {0}\n".format(len(dictionary)))
-        [ lex.write(w[0] + "\n") for w in dictionary ]
+    if dump_lexicon:
+        with open('./words/lexicon.tmp', 'w') as lex:
+            lex.write("# input:  {0}\n".format(pre_inpt))
+            lex.write("# length: {0}\n".format(len(dictionary)))
+            [ lex.write(w[0] + "\n") for w in dictionary ]
 
     # find all anagrams
     temp_result = []
@@ -168,7 +169,6 @@ def main(pre_inpt, **kwds):
     result = [0]
 
     mainloop(dictionary, inpt, result, limit, temp_result)
-    # mainloop(dictionary, inpt, result, limit, temp_result)
 
 if __name__=="__main__":
     # input phrase
@@ -193,7 +193,7 @@ if __name__=="__main__":
     parser.add_option('-d', '--dump', action="store_true", dest='dump_lexicon',
                       help="write initial lexicon to words/lexicon.tmp")
     parser.add_option('-q', '--quiet', action="store_true", dest='quiet',
-                      help="write initial lexicon to words/lexicon.tmp")
+                      help="don't output anything")
 
     (options, args) = parser.parse_args()
 
