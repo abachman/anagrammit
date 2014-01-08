@@ -7,7 +7,7 @@ qs    = require 'querystring'
 guard_token = process.env.API_TOKEN || 'dev'
 guard       = new RegExp("^" + guard_token + "$");
 
-generate = (req, res) -> 
+generate = (req, res) ->
   query = req.url.match(generate.matcher)
   query = query[2]
   query = qs.parse(query)
@@ -15,16 +15,19 @@ generate = (req, res) ->
   unless query.token && guard.test(query.token)
     console.log "expected: #{ guard }, got: #{ query.token }"
     res.writeHead 403, "Content-Type": "application/json"
-    out = 
+    out =
       status: "error"
       message: "api access token does not match"
     res.end JSON.stringify(out)
     return
 
-  phrase = query.phrase.replace /[^a-z]/, ''
+  input_phrase = query.phrase.replace /[^a-z]/, ''
+  console.log "searching for anagrams of #{ input_phrase }"
 
   # start the generator
-  pygen = spawn 'python', ['langs/python/anagrammit.py', phrase]
+
+  start = new Date().getTime()
+  pygen = spawn 'python', ['langs/python/anagrammit.py', input_phrase]
 
   data = []
 
@@ -38,9 +41,12 @@ generate = (req, res) ->
     res.writeHead 200, "Content-Type": "application/json"
 
     data = (word for word in data when word.length)
-    out = 
+    out =
       status: 'success'
       results: data
+      time: (new Date().getTime() - start)
+      input: input_phrase
+      input_length: input_phrase.length
 
     res.end JSON.stringify(out)
 
@@ -48,7 +54,7 @@ generate.matcher = /^\/generate(\?(.*))?$/i
 
 favicon = (req, res) ->
   # don't ask again
-  res.writeHead 200, 
+  res.writeHead 200,
     "Last-Modified": "Tue, 15 Nov 1994 12:45:26 GMT"
     "Expires": "1 Jan 2100 12:45:26 GMT"
 
