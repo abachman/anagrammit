@@ -1,6 +1,9 @@
 {
   "name":"anagrammit",
   "version":"0.0.1",
+  "scripts": {
+    "build": "coffee -c -o ./lib ./src"
+  },
   "dependencies": {
     "underscore": "1.1.7"
   }
