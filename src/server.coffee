@@ -27,7 +27,9 @@ generate = (req, res) ->
   # start the generator
 
   start = new Date().getTime()
-  pygen = spawn 'python', ['langs/python/anagrammit.py', input_phrase]
+  limit = if query.limit? then parseInt(query.limit) else 10
+  limit = limit || 10
+  pygen = spawn 'python', ['langs/python/anagrammit.py', "-n #{limit}", input_phrase]
 
   data = []
 
