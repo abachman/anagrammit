@@ -4961,7 +4961,6 @@ bogle
 bogtrotter
 bogus
 bogy
-bohunk
 boil
 boiled
 boiler
@@ -5083,7 +5082,6 @@ boomkin
 boon
 boondocks
 boondoggle
-boong
 boor
 boorish
 boost
@@ -5621,7 +5619,6 @@ brow
 browband
 browbeat
 brown
-brownie
 browning
 brownout
 brownstone
@@ -7530,7 +7527,6 @@ chinchilla
 chinchy
 chine
 chinfest
-chink
 chinkapin
 chino
 chinoiserie
@@ -7648,7 +7644,6 @@ chopper
 chopping
 choppy
 chops
-chopstick
 choragus
 choral
 chorale
@@ -7753,7 +7748,6 @@ chuddar
 chufa
 chuff
 chuffy
-chug
 chukar
 chukker
 chum
@@ -9467,7 +9461,6 @@ coolish
 coolth
 coom
 coomb
-coon
 cooncan
 coonhound
 coonskin
@@ -10001,7 +9994,6 @@ crackbrain
 crackbrained
 crackdown
 cracked
-cracker
 crackerjack
 cracking
 crackle
@@ -18190,7 +18182,6 @@ ghyll
 giant
 giantess
 giantism
-giaour
 gib
 gibber
 gibberish
@@ -18617,7 +18608,6 @@ goofy
 googly
 googol
 googolplex
-gook
 goon
 goop
 goosander
@@ -18857,9 +18847,7 @@ graze
 grazier
 grazing
 grease
-greaseball
 greasepaint
-greaser
 greasewood
 greasy
 great
@@ -18955,7 +18943,6 @@ grindelia
 grinder
 grindery
 grindstone
-gringo
 grip
 gripe
 grippe
@@ -19134,7 +19121,6 @@ guilt
 guiltless
 guilty
 guimpe
-guinea
 guipure
 guise
 guitar
@@ -19404,7 +19390,6 @@ hairtail
 hairworm
 hairy
 hajj
-hajji
 hake
 hakim
 halation
@@ -20245,7 +20230,6 @@ hibernate
 hibiscus
 hic
 hiccup
-hick
 hickey
 hickory
 hid
@@ -20303,7 +20287,6 @@ hike
 hilarious
 hilarity
 hill
-hillbilly
 hillock
 hillside
 hilltop
@@ -20589,7 +20572,6 @@ honeysuckle
 hong
 honied
 honk
-honky
 honor
 honorable
 honorarium
@@ -23392,7 +23374,6 @@ jibber
 jibe
 jiffy
 jig
-jigaboo
 jigger
 jiggered
 jiggermast
@@ -28491,10 +28472,6 @@ nidus
 niece
 niello
 nifty
-niggard
-niggardly
-nigger
-niggerhead
 niggle
 niggling
 nigh
@@ -28550,7 +28527,6 @@ ninth
 niobic
 niobium
 niobous
-nip
 nipa
 niphablepsia
 nipper
@@ -28622,7 +28598,6 @@ nodule
 nodus
 noesis
 noetic
-nog
 noggin
 nogging
 noil
@@ -30202,7 +30177,6 @@ padding
 paddle
 paddlefish
 paddock
-paddy
 pademelon
 padlock
 padnag
@@ -30755,7 +30729,6 @@ pastrami
 pastry
 pasturage
 pasture
-pasty
 pat
 patagium
 patch
@@ -32441,7 +32414,6 @@ pollock
 pollster
 pollute
 polluted
-pollywog
 polo
 polonaise
 polonium
@@ -34901,7 +34873,6 @@ redintegrate
 redintegration
 redistrict
 redivivus
-redneck
 redness
 redo
 redolent
@@ -34914,7 +34885,6 @@ redraft
 redress
 redroot
 redshank
-redskin
 redstart
 redtop
 reduce
@@ -36455,7 +36425,6 @@ samarium
 samarskite
 samba
 sambar
-sambo
 same
 samekh
 sameness
@@ -36645,7 +36614,6 @@ saucepan
 saucer
 saucy
 sauerbraten
-sauerkraut
 sauger
 sauna
 saunter
@@ -36965,7 +36933,6 @@ scram
 scramble
 scrambler
 scrannel
-scrap
 scrapbook
 scrape
 scraper
@@ -37709,7 +37676,6 @@ shebang
 shebeen
 shed
 sheen
-sheeny
 sheep
 sheepcote
 sheepdog
@@ -38361,7 +38327,6 @@ slam
 slander
 slang
 slangy
-slant
 slantwise
 slap
 slapdash
@@ -38464,7 +38429,6 @@ slogan
 sloganeer
 sloop
 slop
-slope
 sloppy
 slopwork
 slosh
@@ -39020,7 +38984,6 @@ spacesuit
 spacial
 spacing
 spacious
-spade
 spadefish
 spadework
 spadiceous
@@ -39215,7 +39178,6 @@ sphygmic
 sphygmograph
 sphygmoid
 sphygmomanometer
-spic
 spica
 spicate
 spiccato
@@ -46455,7 +46417,6 @@ woolpack
 woolsack
 woorali
 woozy
-wop
 word
 wordage
 wordbook
