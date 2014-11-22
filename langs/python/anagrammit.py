@@ -8,6 +8,7 @@ Project notes at [bachman.infogami.com](http://bachman.infogami.com/anagrammer)
 from optparse import OptionParser
 from time import time
 import sys
+from random import shuffle
 
 try:
     import psyco
@@ -149,6 +150,9 @@ def main(pre_inpt, **kwds):
         w = w.strip()
         if len(w) > word_len and w != include and w != exclude:
             word_list.append(w)
+
+    # shuffle every time
+    shuffle(word_list)
 
     dictionary = createOrigLex(word_list, inpt)
 
