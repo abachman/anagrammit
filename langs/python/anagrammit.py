@@ -146,7 +146,7 @@ def main(pre_inpt, **kwds):
 
     # generate the lexicon, filtering by word_len
     word_list = []
-    for w in open('./words/alice-in-wonderland-dictionary.txt'):
+    for w in open('./words/war-and-peace-dictionary.txt'):
         w = w.strip()
         if len(w) > word_len and w != include and w != exclude:
             word_list.append(w)
